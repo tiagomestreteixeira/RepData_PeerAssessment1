@@ -1,20 +1,87 @@
-# Reproducible Research: Peer Assessment 1
+# Reproducible Research: Peer Assessment 1  
+
 
 
 ## Loading and preprocessing the data
+```{r,echo=TRUE}
+data<-read.csv("activity.csv",header = TRUE)
+dataWithNa<-data
+data<-na.exclude(data)
+library(plyr)
+dataStepsPerDay<-ddply(data, .(date), summarise, TotalSteps = sum(steps))
+dataMeansMediansPerDay<-ddply(data, .(date), summarise, TotalMeans = mean(steps), TotalMedian = median(steps))
+```
 
-
+## Total Steps
+```{r,echo=TRUE}
+library(lattice)
+histogram(dataStepsPerDay$TotalSteps, main="Frequency of Steps", breaks = 53, xlab = "Number of Steps in a day")
+```
 
 ## What is mean total number of steps taken per day?
+Median:  
+```{r, echo=TRUE}
+median(dataMeansMediansPerDay$TotalMedian)
+```
 
-
+Mean:  
+```{r, echo=TRUE}
+mean(dataMeansMediansPerDay$TotalMeans)
+```
 
 ## What is the average daily activity pattern?
-
+1.  
+```{r,echo=TRUE}
+plot(data$interval,data$steps,type = "l",xaxt = 'n')
+axis(1, labels = c('0:00', '5:00', '10:00', '15:00', '20:00'), at = c(0, 500, 1000, 1500, 2000))
+```
+  
+2.  
+```{r,echo=TRUE}
+dataIntervalPerDay<-ddply(data, .(interval), summarise, TotalSteps = sum(steps))
+subset(dataIntervalPerDay, dataIntervalPerDay$TotalSteps==max(dataIntervalPerDay$TotalSteps))$interval
+```
 
 
 ## Imputing missing values
+Number of NA:  
+```{r,echo=TRUE}
+sum(is.na(dataWithNa$steps))
 
+```
+
+
+```{r, echo=TRUE}
+# Fill the NA value with the mean of steps
+dataWithNa$steps[is.na(dataWithNa$steps)]<-mean(dataMeansMediansPerDay$TotalMeans)
+#New data Frame
+data<-data.frame(dataWithNa)
+dataStepsPerDay<-ddply(data, .(date), summarise, TotalSteps = sum(steps))
+histogram(dataStepsPerDay$TotalSteps, main="Frequency of Steps", breaks = 53, xlab = "Number of Steps in a day")
+```
+  
+Mean:  
+```{r,echo=TRUE}
+mean(data$steps)
+```
+  
+Median:
+```{r, echo=TRUE}
+median(data$steps)
+```
+I do not observe any difference. But in the histogram i see a difference in the frequencies. 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+```{r, echo=TRUE}
+#Do not figure out how to just apply a 2 factor weekend method
+data<-cbind(data,weekdays(as.Date(data$date)))
+```
+
+
+```{r simulation,echo=TRUE}
+
+plot(data$interval,data[,4],type = "l")
+```
