@@ -1,8 +1,3 @@
----
-output:
-  md_document:
-    variant: markdown_github
----
 # Reproducible Research: Peer Assessment 1  
 
 
@@ -40,7 +35,7 @@ summary(dataWithNa)
 ##  Max.   :806.0   2012-10-06:  288   Max.   :2355  
 ##  NA's   :2304    (Other)   :15840
 ```
-
+ 
 
 ## Total Steps
 
